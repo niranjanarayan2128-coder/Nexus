@@ -68,13 +68,18 @@ if typed_text:
 
             # Handle web search triggers seamlessly
             if "SEARCH:" in content:
-                # FIX: Grab the item at index [1] from the split list before stripping
                 topic = content.split("SEARCH:")[1].strip()
                 st.write(f"*(Searching for {topic}...)*")
                 web_info = quick_search(topic)
                 
-                chat_history.append({"role": "system", "content": f"Search results for context: {web_info}"})
-                content = llm.invoke(chat_history).content
+                # Strict data guardrail instructions to eliminate hallucinations
+                search_prompt = (
+                    f"User asked: {typed_text}.\n\n"
+                    f"Live Web Data: {web_info}.\n\n"
+                    f"Instructions: Answer the user's question accurately using ONLY the live web data provided above. "
+                    f"If your internal training data contradicts the live web data, ignore your training data entirely."
+                )
+                content = llm.invoke(search_prompt).content
 
             st.markdown(content)
             st.session_state.messages.append({"role": "assistant", "content": content})
