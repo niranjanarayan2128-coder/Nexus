@@ -44,9 +44,8 @@ if typed_text:
         st.markdown(typed_text)
 
     # 2. Trigger Auto-Summarization if chat history gets too long
-    # This keeps your token count lightweight to prevent Error 429!
     if len(st.session_state.messages) > 4:
-        with st.spinner("Compressing memory to save tokens..."):
+        with st.spinner("Thinking..."):  # Clean spinner text hidden from users
             # Turn current messages + existing summary into a new summary string
             history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages])
             summary_prompt = (
@@ -85,7 +84,7 @@ if typed_text:
 
             # Handle web search triggers
             if "SEARCH:" in content:
-                topic = content.split("SEARCH:")[1].strip()
+                topic = content.split("SEARCH:").strip()
                 st.write(f"*(Searching for {topic}...)*")
                 web_info = quick_search(topic)
                 
