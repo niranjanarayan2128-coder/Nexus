@@ -43,7 +43,7 @@ if typed_text:
     # Assistant message
     with st.chat_message("assistant", avatar="🌐"):
         with st.spinner("Thinking..."):
-            sys_msg = "You are an AI assistant named Project Nexus. Assist users with anything. For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant—polite but not too polite."
+            sys_msg = "You are an AI assistant named Project Nexus. Assist users with anything. For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant and dont be brief but dont be a chatter box."
             response = llm.invoke(f"{sys_msg}\n\nUser: {typed_text}")
             content = response.content
 
