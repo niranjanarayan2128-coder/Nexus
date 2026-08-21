@@ -11,7 +11,7 @@ st.markdown("How can I help you?")
 # --- 2. INITIALIZE BRAIN (Groq Cloud API) ---
 # It reads your secret API key safely from Streamlit's settings
 groq_api_key = st.secrets["GROQ_API_KEY"]
-llm = ChatGroq(model="llama-3.1-8b-instant", groq_api_key=groq_api_key, temperature=0.7)
+llm = ChatGroq(model="openai/gpt-oss-20b", groq_api_key=groq_api_key, temperature=0.7)
 # --- 3. HELPER FUNCTIONS ---
 def quick_search(query):
     try:
