@@ -68,7 +68,8 @@ if typed_text:
 
             # Handle web search triggers seamlessly
             if "SEARCH:" in content:
-                topic = content.split("SEARCH:").strip()
+                # FIX: Grab the item at index [1] from the split list before stripping
+                topic = content.split("SEARCH:")[1].strip()
                 st.write(f"*(Searching for {topic}...)*")
                 web_info = quick_search(topic)
                 
@@ -93,4 +94,4 @@ if typed_text:
             # Safely trim the message history list so token depth resets
             st.session_state.messages = st.session_state.messages[-2:]
         except Exception:
-            pass # Keep moving silently if the background loop hits a blip
+            pass
