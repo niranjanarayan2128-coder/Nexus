@@ -10,7 +10,7 @@ st.markdown("How can I help you?")
 
 # --- 2. INITIALIZE BRAIN (Groq Cloud API) ---
 # It reads your secret API key safely from Streamlit's settings
-groq_api_key = st.secrets[""]
+groq_api_key = st.secrets["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"]
 llm = ChatGroq(model="llama-3.2-3b-preview", groq_api_key=groq_api_key, temperature=0.7)
 
 # --- 3. HELPER FUNCTIONS ---
