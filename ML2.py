@@ -36,53 +36,37 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 
-# --- 6. CHAT & SUMMARIZATION LOGIC ---
+# --- 6. CHAT LOGIC ---
 if typed_text:
-    # 1. Save and show user message
+    # 1. Save and show user message instantly
     st.session_state.messages.append({"role": "user", "content": typed_text})
     with st.chat_message("user", avatar="👤"):
         st.markdown(typed_text)
 
-    # 2. Trigger Auto-Summarization if chat history gets too long
-    if len(st.session_state.messages) > 4:
-        with st.spinner("Thinking..."):  # Clean spinner text hidden from users
-            # Turn current messages + existing summary into a new summary string
-            history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages])
-            summary_prompt = (
-                f"Progressively summarize the conversation so far. "
-                f"Current summary: {st.session_state.summary}\n\n"
-                f"New conversation data to add:\n{history_text}\n\n"
-                f"Write a concise paragraph capturing essential facts."
-            )
-            st.session_state.summary = llm.invoke(summary_prompt).content
-            
-            # Wipe out old messages from memory so they stop costing tokens
-            st.session_state.messages = st.session_state.messages[-2:]
-
-    # 3. Build the payload for the AI brain with your exact system prompt
+    # 2. Build the payload for the AI brain with your exact system prompt
     system_instruction = (
         "You are an AI assistant named Project Nexus. Assist users with anything. "
         "For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant "
         "but dont be brief but dont be a chatter box."
     )
     
-    # Insert the compressed background history summary directly into the system brain
+    # Safely inject the background history context if it exists
     if st.session_state.summary:
-        system_instruction += f" Background history context of this chat: {st.session_state.summary}"
+        system_instruction += f" Background history context of things you already know about this user: {st.session_state.summary}"
 
     chat_history = [{"role": "system", "content": system_instruction}]
     
-    # Append the remaining active messages
+    # Append current conversation backlog
     for msg in st.session_state.messages:
         chat_history.append({"role": msg["role"], "content": msg["content"]})
 
-    # 4. Generate response
+    # 3. Generate response smoothly
     with st.chat_message("assistant", avatar="🌐"):
         with st.spinner("Thinking..."):
             response = llm.invoke(chat_history)
             content = response.content
 
-            # Handle web search triggers
+            # Handle web search triggers seamlessly
             if "SEARCH:" in content:
                 topic = content.split("SEARCH:").strip()
                 st.write(f"*(Searching for {topic}...)*")
@@ -93,3 +77,20 @@ if typed_text:
 
             st.markdown(content)
             st.session_state.messages.append({"role": "assistant", "content": content})
+
+    # 4. SILENT BACKGROUND COMPRESSION (Happens after the chat is displayed!)
+    if len(st.session_state.messages) > 6:
+        # Turn older logs into a raw data string to pass into the engine secretly
+        history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state.messages[:-2]])
+        summary_prompt = (
+            f"You are a background data compiler. Read this dialogue data and compress it into a tiny list of core facts. "
+            f"Do not talk to a user. Just return raw facts. Existing facts: {st.session_state.summary}\n\n"
+            f"New dialogue data:\n{history_text}"
+        )
+        try:
+            # Update background state without rendering anything to the webpage
+            st.session_state.summary = llm.invoke(summary_prompt).content
+            # Safely trim the message history list so token depth resets
+            st.session_state.messages = st.session_state.messages[-2:]
+        except Exception:
+            pass # Keep moving silently if the background loop hits a blip
