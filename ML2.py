@@ -35,23 +35,36 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 if typed_text:
-    # User message
+    # 1. Save and show user message
     st.session_state.messages.append({"role": "user", "content": typed_text})
     with st.chat_message("user", avatar="👤"):
         st.markdown(typed_text)
 
-    # Assistant message
+    # 2. Build the history payload for the AI brain
+    # We load the system prompt first, then append all previous messages
+    chat_history = [
+        {"role": "system", "content": "You are an AI assistant named Project Nexus. Assist users with anything. For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant but dont be brief but dont be a chatter box"}
+    ]
+    
+    for msg in st.session_state.messages:
+        chat_history.append({"role": msg["role"], "content": msg["content"]})
+
+    # 3. Assistant response block
     with st.chat_message("assistant", avatar="🌐"):
         with st.spinner("Thinking..."):
-            sys_msg = "You are an AI assistant named Project Nexus. Assist users with anything. For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant and dont be brief but dont be a chatter box."
-            response = llm.invoke(f"{sys_msg}\n\nUser: {typed_text}")
+            # We send the WHOLE chat_history array now instead of just a text string
+            response = llm.invoke(chat_history)
             content = response.content
 
+            # Handle web search triggers
             if "SEARCH:" in content:
                 topic = content.split("SEARCH:")[1].strip()
                 st.write(f"*(Searching for {topic}...)*")
                 web_info = quick_search(topic)
-                content = llm.invoke(f"User asked: {typed_text}. Search info: {web_info}. Answer modestly.").content
+                
+                # Append the search result to context and re-invoke
+                chat_history.append({"role": "system", "content": f"Search results for context: {web_info}"})
+                content = llm.invoke(chat_history).content
 
             st.markdown(content)
             st.session_state.messages.append({"role": "assistant", "content": content})
