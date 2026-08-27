@@ -84,7 +84,7 @@ if typed_text:
                 # Handle Web Search Routes
                 if "SEARCH:" in content:
                     # FIX: Safely parse index 1 of the generated split list to strip spacing
-                    topic = content.split("SEARCH:")[1].strip()
+                    topic = parts[1].strip() if len(parts) > 1 else content.strip()
                     st.write(f"*(Querying Data Matrix for {topic}...)*")
                     web_info = quick_search(topic)
                     
