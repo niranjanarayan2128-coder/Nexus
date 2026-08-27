@@ -19,7 +19,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("🌐 Project Nexus")
-st.caption("Next-Generation Academic AI Interface")
+st.caption("Here to help, what do you need?")
 
 # --- 2. INITIALIZE BRAIN ---
 groq_api_key = st.secrets["GROQ_API_KEY"]
@@ -35,7 +35,7 @@ def quick_search(query):
         return "Search currently unavailable."
 
 # --- 4. INPUT HANDLING ---
-typed_text = st.chat_input("Query Project Nexus...")
+typed_text = st.chat_input("Ask me anything.")
 
 # --- 5. INITIALIZE MEMORY VAULTS ---
 if "messages" not in st.session_state:
