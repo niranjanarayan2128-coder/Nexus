@@ -13,7 +13,7 @@ st.markdown("""
         footer {visibility: hidden;}
         header {visibility: hidden;}
         .stApp {background-color: #851900; color: #ffffff;}
-        .stChatInputContainer {background-color: #111827 !important; border-radius: 12px !important; border: 1px solid rgba(56, 189, 248, 0.2) !important;}
+        .stChatInputContainer {background-color: #FF6363 !important; border-radius: 12px !important; border: 1px solid rgba(219, 134, 134, 0.4) !important;}
         .stChatInput {color: #ffffff !important;}
     </style>
 """, unsafe_allow_html=True)
