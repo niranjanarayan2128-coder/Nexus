@@ -12,7 +12,7 @@ st.markdown("""
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
-        .stApp {background-color: #030712; color: #ffffff;}
+        .stApp {background-color: #851900; color: #ffffff;}
         .stChatInputContainer {background-color: #111827 !important; border-radius: 12px !important; border: 1px solid rgba(56, 189, 248, 0.2) !important;}
         .stChatInput {color: #ffffff !important;}
     </style>
