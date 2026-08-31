@@ -1,6 +1,3 @@
-[sidebar]
-showSidebarNavigation = true
-
-[ui]
-# This forces the sidebar picker menu to stay open permanently across every device
-initialSidebarState = "expanded"
+[client]
+# The updated modern key to lock your sidebar wide open on startup
+sidebarState = "expanded"
