@@ -152,7 +152,7 @@ if typed_text:
 
                 if "SEARCH:" in content:
                     parts = content.split("SEARCH:")
-                    # FIXED: Added array index pointer slice [1] to extract the text safely before stripping
+                    # FIXED: Added array index pointer parts[1] to isolate text string safely
                     topic = parts[1].strip() if len(parts) > 1 else ""
                     
                     if topic:
