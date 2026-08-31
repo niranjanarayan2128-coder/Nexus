@@ -4,7 +4,6 @@ from langchain_groq import ChatGroq
 from duckduckgo_search import DDGS
 
 # --- 1. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
-# Mount brand logo configuration to the top of your sidebar array cleanly
 logo_filename = "nexusnetwork.png"
 if os.path.exists(logo_filename):
     st.sidebar.image(logo_filename, width=200)
@@ -54,7 +53,6 @@ else:
     )
     fallback_name = "Roxy"
 
-# Initialize page layout options securely
 st.set_page_config(
     page_title=page_title, 
     page_icon="🌐", 
@@ -62,21 +60,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom UI layout styling injection (FIXED: Makes sure the menu trigger button stays visible!)
+# Custom UI layout styling injection
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
         header {{visibility: hidden;}}
         
-        /* Base App Canvas Background */
         .stApp {{
             background-color: {bg_color}; 
             color: #FFFFFF;
             z-index: 1 !important;
         }}
         
-        /* Chat Input Element Wrappers */
         .stChatInputContainer {{
             background-color: {input_bg} !important; 
             border-radius: 12px !important; 
@@ -86,19 +82,27 @@ st.markdown(f"""
             color: #FFFFFF !important;
         }}
         
-        /* Forcing sidebar structural stack layers */
         [data-testid="stSidebar"] {{
             z-index: 999999 !important;
             background-color: rgba(0, 0, 0, 0.25) !important;
         }}
         
-        /* REPAIRED: Forces the opening menu button to be visible and sit above all backgrounds */
+        /* THE VISIBILITY FIX: Forces the expander block to display as a distinct dark button tab */
         [data-testid="stSidebarCollapsedControl"] {{
             z-index: 1000000 !important;
-            display: block !important;
-            background-color: rgba(0, 0, 0, 0.4) !important;
+            display: flex !important;
+            background-color: #111827 !important; /* Matte charcoal dark background rectangle */
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
             border-radius: 0 8px 8px 0 !important;
-            padding: 4px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+            left: 0 !important;
+            top: 10px !important;
+        }}
+        
+        /* Forces the native hidden internal SVG arrow graphic to turn bright white */
+        [data-testid="stSidebarCollapsedControl"] svg {{
+            fill: #FFFFFF !important;
+            color: #FFFFFF !important;
         }}
     </style>
 """, unsafe_allow_html=True)
@@ -110,10 +114,8 @@ st.caption(page_caption)
 try:
     raw_key = st.secrets["GROQ_API_KEY"]
     groq_api_key = raw_key.strip().replace('"', '').replace("'", "")
-    if "your_actual" in groq_api_key or len(groq_api_key) < 10:
-        st.error("❌ Setup Error: Your Secrets box contains placeholder text. Update it with a real gsk_ key.")
 except Exception:
-    st.error("❌ Key Error: Streamlit cannot find a secret labeled 'GROQ_API_KEY' in your dashboard settings.")
+    pass
 
 llm = ChatGroq(model="openai/gpt-oss-120b", groq_api_key=groq_api_key, temperature=0.4)
 
@@ -135,7 +137,6 @@ if msg_vault_key not in st.session_state:
 if summary_vault_key not in st.session_state:
     st.session_state[summary_vault_key] = ""
 
-# Render conversation logs
 for message in st.session_state[msg_vault_key]:
     avatar_icon = "👤" if message["role"] == "user" else "🌐"
     with st.chat_message(message["role"], avatar=avatar_icon):
@@ -159,7 +160,7 @@ if typed_text:
     )
     
     if st.session_state[summary_vault_key]:
-        system_instruction += f" Background history context of things you already know about this user: {st.session_state[summary_vault_key]}"
+        system_instruction += f" Background history context: {st.session_state[summary_vault_key]}"
 
     chat_history = [{"role": "system", "content": system_instruction}]
     for msg in st.session_state[msg_vault_key]:
@@ -181,8 +182,7 @@ if typed_text:
                         
                         search_prompt = (
                             f"User asked: {typed_text}.\n\nLive Web Data: {web_info}.\n\n"
-                            f"Instructions: Answer the user's question accurately using ONLY the live web data provided above. "
-                            f"If the data is blank or completely unrelated to the question, reply with 'FAILSAFE_TRIGGER'."
+                            f"Instructions: Answer accurately using ONLY live web data. If blank, reply 'FAILSAFE_TRIGGER'."
                         )
                         content = llm.invoke(search_prompt).content.strip()
 
@@ -195,13 +195,11 @@ if typed_text:
             st.markdown(content)
             st.session_state[msg_vault_key].append({"role": "assistant", "content": content})
 
-    # 8. SILENT BACKGROUND COMPRESSION (Triggers when history array exceeds 6 steps)
+    # 8. SILENT BACKGROUND COMPRESSION
     if len(st.session_state[msg_vault_key]) > 6:
         history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state[msg_vault_key][:-2]])
         summary_prompt = (
-            f"You are a background data compiler. Read this dialogue data and compress it into a tiny list of core facts. "
-            f"Do not talk to a user. Just return raw facts. Existing facts: {st.session_state[summary_vault_key]}\n\n"
-            f"New dialogue data:\n{history_text}"
+            f"You are a background data compiler. Compress this into core facts. Existing: {st.session_state[summary_vault_key]}\n\nData:\n{history_text}"
         )
         try:
             st.session_state[summary_vault_key] = llm.invoke(summary_prompt).content
