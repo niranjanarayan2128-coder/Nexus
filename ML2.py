@@ -100,7 +100,7 @@ if typed_text:
 
             except Exception as e:
                 # System execution crash fallback
-                content = "System Error: Connection disrupted. Project Nexus core could not parse the request."
+                content = "System Error: Project Nexus could not understand."
 
             st.markdown(content)
             st.session_state.messages.append({"role": "assistant", "content": content})
