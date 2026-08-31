@@ -17,7 +17,6 @@ selected_bot = st.sidebar.selectbox(
 )
 
 # --- 2. PREMIUM THEME CONFIGURATOR ---
-# FIXED: Updated string conditions to match your new descriptive dropdown options perfectly
 if "Sparks" in selected_bot:
     page_title = "Sparks"
     page_caption = "Here to help, what do you need?"
@@ -39,7 +38,6 @@ elif "Nexus" in selected_bot:
     extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection. Also if user asks you were made by a small developer in kochi called Niranjan Narayan."
     fallback_name = "Nexus"
 else:
-    # ROXY INNER PROFILE - NO DOG EMOJIS ALLOWED ANYWHERE
     page_title = "Roxy"
     page_caption = "Here to listen, Im ready to listen."
     title_display = "Talk to Roxy"
@@ -59,6 +57,7 @@ else:
 st.set_page_config(page_title=page_title, page_icon="🌐", layout="wide")
 
 # Custom UI injector utilizing your selected variables
+# NEW: Force-overrides Streamlit's mobile styles to keep the sidebar permanently visible!
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
@@ -67,23 +66,39 @@ st.markdown(f"""
         .stApp {{background-color: {bg_color}; color: #FFFFFF;}}
         .stChatInputContainer {{background-color: {input_bg} !important; border-radius: 12px !important; border: 1px solid {border_color} !important;}}
         .stChatInput {{color: #FFFFFF !important;}}
+        
+        /* --- SIDEBAR FORCE-AWAKE INJECTION --- */
+        /* Forces the sidebar to stay visible on mobile layouts */
+        [data-testid="stSidebar"] {{
+            left: 0 !important;
+            transform: none !important;
+            transition: none !important;
+            width: 260px !important;
+            display: block !important;
+        }}
+        /* Hides the clumsy floating trigger arrow icon button completely */
+        [data-testid="stSidebarCollapsedControl"] {{
+            display: none !important;
+        }}
+        /* Shifts the main chat window so it leaves clean space for the locked menu */
+        .stMainContainer {{
+            margin-left: 0px !important;
+        }}
     </style>
 """, unsafe_allow_html=True)
 
 st.title(title_display)
 st.caption(page_caption)
 
-# --- 3. SANITIZED BRAIN INITIALIZATION (UPGRADED TO 120B) ---
+# --- 3. SANITIZED BRAIN INITIALIZATION ---
 try:
     raw_key = st.secrets["GROQ_API_KEY"]
     groq_api_key = raw_key.strip().replace('"', '').replace("'", "")
-    
     if "your_actual" in groq_api_key or len(groq_api_key) < 10:
         st.error("❌ Setup Error: Your Secrets box contains placeholder text. Update it with a real gsk_ key.")
 except Exception:
     st.error("❌ Key Error: Streamlit cannot find a secret labeled 'GROQ_API_KEY' in your dashboard settings.")
 
-# Connected directly to OpenAI's flagship 120-Billion open-weights model
 llm = ChatGroq(model="openai/gpt-oss-120b", groq_api_key=groq_api_key, temperature=0.4)
 
 # --- 4. HELPER FUNCTIONS ---
@@ -96,7 +111,6 @@ def quick_search(query):
         return "Search currently unavailable."
 
 # --- 5. ISOLATED MEMORY VAULT INITIALIZATION ---
-# Links bot selection directly to keys so conversations do not leak into each other
 msg_vault_key = f"messages_{selected_bot}"
 summary_vault_key = f"summary_{selected_bot}"
 
@@ -116,12 +130,10 @@ typed_text = st.chat_input("Ask me anything.")
 
 # --- 7. CHAT LOGIC WITH AUTOMATIC FAILSAFE ---
 if typed_text:
-    # Save and show user message instantly
     st.session_state[msg_vault_key].append({"role": "user", "content": typed_text})
     with st.chat_message("user", avatar="👤"):
         st.markdown(typed_text)
 
-    # Automated background directive ensuring logic containment 
     system_instruction = (
         f"You are an AI assistant named {system_name}. Assist users with anything. "
         f"For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant "
@@ -134,21 +146,17 @@ if typed_text:
         system_instruction += f" Background history context of things you already know about this user: {st.session_state[summary_vault_key]}"
 
     chat_history = [{"role": "system", "content": system_instruction}]
-    
     for msg in st.session_state[msg_vault_key]:
         chat_history.append({"role": msg["role"], "content": msg["content"]})
 
-    # Generate response smoothly
     with st.chat_message("assistant", avatar="🌐"):
         with st.spinner("Thinking..."):
             try:
                 response = llm.invoke(chat_history)
                 content = response.content.strip()
 
-                # Handle Web Search Routes
                 if "SEARCH:" in content:
                     parts = content.split("SEARCH:")
-                    # Fixed token boundary checking before array parsing
                     topic = parts[1].strip() if len(parts) > 1 else ""
                     
                     if topic:
@@ -162,19 +170,16 @@ if typed_text:
                         )
                         content = llm.invoke(search_prompt).content.strip()
 
-                # --- FAILSAFE EVALUATION ENGINE ---
                 if not content or "FAILSAFE_TRIGGER" in content or len(content) < 2:
                     content = f"I'm sorry, I couldn't fully comprehend or verify that query. Could you try rephrasing your request for {fallback_name}?"
 
             except Exception as e:
-                # System execution crash fallback
                 content = f"System Error: {system_name} could not understand your request."
 
             st.markdown(content)
             st.session_state[msg_vault_key].append({"role": "assistant", "content": content})
 
-    # 8. SILENT BACKGROUND COMPRESSION (Triggers when history array exceeds 6 steps)
-    # FIXED: Re-added missing closing characters at the tail end of your code snippet
+    # 8. SILENT BACKGROUND COMPRESSION
     if len(st.session_state[msg_vault_key]) > 6:
         history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state[msg_vault_key][:-2]])
         summary_prompt = (
