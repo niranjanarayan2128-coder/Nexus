@@ -4,7 +4,7 @@ from langchain_groq import ChatGroq
 from duckduckgo_search import DDGS
 
 # --- 1. PREMIUM GLASS UI DESIGN ---
-st.set_page_config(page_title="Project Nexus", page_icon="🌐", layout="wide")
+st.set_page_config(page_title="Sparks", page_icon="🌐", layout="wide")
 
 # Custom CSS overrides to build a premium dark matrix feel inside your framing website
 st.markdown("""
@@ -12,13 +12,13 @@ st.markdown("""
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
-        .stApp {background-color: #851900; color: #ffffff;}
-        .stChatInputContainer {background-color: #FF6363 !important; border-radius: 12px !important; border: 1px solid rgba(219, 134, 134, 0.4) !important;}
+        .stApp {background-color: #FFD103; color: #ffffff;}
+        .stChatInputContainer {background-color: #F5DE89 !important; border-radius: 12px !important; border: 1px solid rgba(255, 255, 255, 0.4) !important;}
         .stChatInput {color: #FF0000 !important;}
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🌐 Project Nexus")
+st.title("Meet Sparks,")
 st.caption("Here to help, what do you need?")
 
 # --- 2. INITIALIZE BRAIN ---
@@ -58,9 +58,9 @@ if typed_text:
 
     # Automated background directive ensuring logic containment 
     system_instruction = (
-        "You are an AI assistant named Project Nexus. Assist users with anything. "
+        "You are an AI assistant named Spark. Assist users with anything. "
         "For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant "
-        "but dont be brief but dont be a chatter box and if user asks you are made by Niranjan Narayan, a small developer in Kochi. "
+        "but dont be brief but dont be a chatter box and if user asks you are made by Niranjan Narayan, a small developer in Kochi, and be funny and kind. "
         "If a request is completely incomprehensible, just a random string of letters with no meaning, "
         "or logically impossible to answer, reply EXACTLY with the word 'FAILSAFE_TRIGGER'."
     )
@@ -75,7 +75,7 @@ if typed_text:
 
     # Generate response smoothly
     with st.chat_message("assistant", avatar="🌐"):
-        with st.spinner("Processing Matrix..."):
+        with st.spinner("Thinking...."):
             try:
                 response = llm.invoke(chat_history)
                 content = response.content.strip()
@@ -84,7 +84,7 @@ if typed_text:
                 if "SEARCH:" in content:
                     # FIX: Safely parse index 1 of the generated split list to strip spacing
                     topic = parts[1].strip() if len(parts) > 1 else content.strip()
-                    st.write(f"*(Querying Data Matrix for {topic}...)*")
+                    st.write(f"*(Searching for {topic}...)*")
                     web_info = quick_search(topic)
                     
                     search_prompt = (
@@ -100,7 +100,7 @@ if typed_text:
 
             except Exception as e:
                 # System execution crash fallback
-                content = "System Error: Project Nexus could not understand."
+                content = "System Error: Spark could not understand."
 
             st.markdown(content)
             st.session_state.messages.append({"role": "assistant", "content": content})
