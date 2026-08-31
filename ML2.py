@@ -3,8 +3,15 @@ import os
 from langchain_groq import ChatGroq
 from duckduckgo_search import DDGS
 
-# --- 1. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
-# Mount brand logo configuration to the top of your sidebar array cleanly
+# --- 1. CORE LAYOUT ---
+# Explicitly force the sidebar state to look open to new visits
+st.set_page_config(
+    page_title="Core Multi-AI", 
+    page_icon="🌐", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 logo_filename = "nexusnetwork.png"
 if os.path.exists(logo_filename):
     st.sidebar.image(logo_filename, width=200)
@@ -21,7 +28,7 @@ if "Sparks" in selected_bot:
     page_title = "Sparks"
     page_caption = "Here to help, what do you need?"
     title_display = "Meet Sparks, A friendly AI assistant."
-    bg_color = "#FFFF00"        # Yellow
+    bg_color = "#FFD103"        # Yellow
     input_bg = "#F5DE89"        # Soft Yellow
     border_color = "rgba(255, 255, 255, 0.4)"
     system_name = "Spark"
@@ -54,54 +61,15 @@ else:
     )
     fallback_name = "Roxy"
 
-# Forcing layout parameters to stay expanded at root-level initialization
-st.set_page_config(
-    page_title=page_title, 
-    page_icon="🌐", 
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Custom UI layout styling injection (Fixed: Brings sidebar stack to the front layer)
+# Safe style properties injection (Clears out problematic overrides)
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
         header {{visibility: hidden;}}
-        
-        /* Base App Canvas Background */
-        .stApp {{
-            background-color: {bg_color}; 
-            color: #FFFFFF;
-            z-index: 1 !important;
-        }}
-        
-        /* Chat Input Element Wrappers */
-        .stChatInputContainer {{
-            background-color: {input_bg} !important; 
-            border-radius: 12px !important; 
-            border: 1px solid {border_color} !important;
-        }}
-        .stChatInput {{
-            color: #FFFFFF !important;
-        }}
-        
-        /* FORCING SIDEBAR STACK PRIORITY: Brings container above background layers */
-        [data-testid="stSidebar"] {{
-            z-index: 999999 !important;
-            background-color: rgba(0, 0, 0, 0.25) !important;
-        }}
-        
-        /* Bringing the mobile chevron button asset to the absolute front layer */
-        [data-testid="stSidebarCollapsedControl"] {{
-            z-index: 1000000 !important;
-            display: block !important;
-        }}
-
-        /* Completely deletes structural internal sidebar close buttons */
-        [data-testid="sidebar-close-button"] {{
-            display: none !important;
-        }}
+        .stApp {{background-color: {bg_color}; color: #FFFFFF;}}
+        .stChatInputContainer {{background-color: {input_bg} !important; border-radius: 12px !important; border: 1px solid {border_color} !important;}}
+        .stChatInput {{color: #FFFFFF !important;}}
     </style>
 """, unsafe_allow_html=True)
 
@@ -113,9 +81,9 @@ try:
     raw_key = st.secrets["GROQ_API_KEY"]
     groq_api_key = raw_key.strip().replace('"', '').replace("'", "")
     if "your_actual" in groq_api_key or len(groq_api_key) < 10:
-        st.error("❌ Setup Error: Your Secrets box contains placeholder text. Update it with a real gsk_ key.")
+        st.error("❌ Setup Error: Update with a real gsk_ key.")
 except Exception:
-    st.error("❌ Key Error: Streamlit cannot find a secret labeled 'GROQ_API_KEY' in your dashboard settings.")
+    st.error("❌ Key Error: Secret 'GROQ_API_KEY' not found.")
 
 llm = ChatGroq(model="openai/gpt-oss-120b", groq_api_key=groq_api_key, temperature=0.4)
 
@@ -137,7 +105,6 @@ if msg_vault_key not in st.session_state:
 if summary_vault_key not in st.session_state:
     st.session_state[summary_vault_key] = ""
 
-# Render conversation logs
 for message in st.session_state[msg_vault_key]:
     avatar_icon = "👤" if message["role"] == "user" else "🌐"
     with st.chat_message(message["role"], avatar=avatar_icon):
@@ -146,7 +113,7 @@ for message in st.session_state[msg_vault_key]:
 # --- 6. INPUT HANDLING ---
 typed_text = st.chat_input("Ask me anything.")
 
-# --- 7. CHAT LOGIC WITH AUTOMATIC FAILSAFE ---
+# --- 7. CHAT LOGIC ---
 if typed_text:
     st.session_state[msg_vault_key].append({"role": "user", "content": typed_text})
     with st.chat_message("user", avatar="👤"):
@@ -156,12 +123,11 @@ if typed_text:
         f"You are an AI assistant named {system_name}. Assist users with anything. "
         f"For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant "
         f"{extra_personality}"
-        f"If a request is completely incomprehensible, just a random string of letters with no meaning, "
-        f"or logically impossible to answer, reply EXACTLY with the word 'FAILSAFE_TRIGGER'."
+        f"If a request is completely incomprehensible, reply EXACTLY with the word 'FAILSAFE_TRIGGER'."
     )
     
     if st.session_state[summary_vault_key]:
-        system_instruction += f" Background history context of things you already know about this user: {st.session_state[summary_vault_key]}"
+        system_instruction += f" Background context: {st.session_state[summary_vault_key]}"
 
     chat_history = [{"role": "system", "content": system_instruction}]
     for msg in st.session_state[msg_vault_key]:
@@ -175,6 +141,7 @@ if typed_text:
 
                 if "SEARCH:" in content:
                     parts = content.split("SEARCH:")
+                    # Fixed indexing parameter array pointer lookup
                     topic = parts[1].strip() if len(parts) > 1 else ""
                     
                     if topic:
@@ -183,27 +150,23 @@ if typed_text:
                         
                         search_prompt = (
                             f"User asked: {typed_text}.\n\nLive Web Data: {web_info}.\n\n"
-                            f"Instructions: Answer the user's question accurately using ONLY the live web data provided above. "
-                            f"If the data is blank or completely unrelated to the question, reply with 'FAILSAFE_TRIGGER'."
+                            f"Instructions: Answer using ONLY the live web data. If data is blank, reply 'FAILSAFE_TRIGGER'."
                         )
                         content = llm.invoke(search_prompt).content.strip()
 
                 if not content or "FAILSAFE_TRIGGER" in content or len(content) < 2:
-                    content = f"I'm sorry, I couldn't fully comprehend or verify that query. Could you try rephrasing your request for {fallback_name}?"
+                    content = f"I'm sorry, I couldn't verify that query. Could you try rephrasing your request?"
 
             except Exception as e:
-                content = f"System Error: {system_name} could not understand your request."
+                content = f"System Error: {system_name} could not parse request."
 
             st.markdown(content)
             st.session_state[msg_vault_key].append({"role": "assistant", "content": content})
 
-    # 8. SILENT BACKGROUND COMPRESSION (Triggers when history array exceeds 6 steps)
     if len(st.session_state[msg_vault_key]) > 6:
         history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state[msg_vault_key][:-2]])
         summary_prompt = (
-            f"You are a background data compiler. Read this dialogue data and compress it into a tiny list of core facts. "
-            f"Do not talk to a user. Just return raw facts. Existing facts: {st.session_state[summary_vault_key]}\n\n"
-            f"New dialogue data:\n{history_text}"
+            f"Progressively summarize facts. Existing: {st.session_state[summary_vault_key]}\n\nData:\n{history_text}"
         )
         try:
             st.session_state[summary_vault_key] = llm.invoke(summary_prompt).content
