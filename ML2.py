@@ -7,7 +7,7 @@ from duckduckgo_search import DDGS
 st.sidebar.markdown("### Model Picker")
 selected_bot = st.sidebar.selectbox(
     "Select the model you want to use:",
-    ["Sparks", "Nexus"],
+    ["Sparks", "Nexus", "Roxy"],
     key="bot_selector"
 )
 
@@ -23,7 +23,7 @@ if selected_bot == "Sparks":
     system_name = "Spark"
     extra_personality = "but be a bit chatty like a friend and if user asks you are made by Niranjan Narayan, a small developer in Kochi, and be funny and kind. "
     fallback_name = "Spark"
-else:
+elif selected_bot == "Nexus":
     page_title = "Nexus"
     page_caption = "Here to Assist, Your personal AI assistant"
     title_display = "Nexus"
@@ -33,6 +33,23 @@ else:
     system_name = "Nexus"
     extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection. "
     fallback_name = "Nexus"
+else:
+    # ROXY INNER PROFILE - NO DOG EMOJIS ALLOWED ANYWHERE
+    page_title = "Roxy"
+    page_caption = "Warmth, Comfort, and Active Listening Support"
+    title_display = "Talk to Roxy"
+    bg_color = "#CD7F32"        # Golden Bronze
+    input_bg = "#1E1105"        # Warm Bark Brown/Black
+    border_color = "rgba(255, 255, 255, 0.3)"
+    system_name = "Roxy"
+    extra_personality = (
+        "You are an emotional support companion named Roxy. Your personality structure is inspired by a loyal, "
+        "comforting golden retriever dog. You are warm, happy to see the user, deeply comforting, and protective. "
+        "Be an incredibly supportive active listener. Keep your answers gentle, encouraging, and easy to read. "
+        "Strict Rule: Under no circumstances should you ever output a dog emoji or mention being an animal explicitly. "
+        "Instead, show loyalty through comforting text phrases like 'I am right here by your side' or 'I am listening intently'."
+    )
+    fallback_name = "Roxy"
 
 st.set_page_config(page_title=page_title, page_icon="🌐", layout="wide")
 
@@ -164,4 +181,3 @@ if typed_text:
             st.session_state[msg_vault_key] = st.session_state[msg_vault_key][-2:]
         except Exception:
             pass
-
