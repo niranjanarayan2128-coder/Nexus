@@ -25,7 +25,7 @@ if selected_bot == "Spark":
     fallback_name = "Spark"
 else:
     page_title = "Project Nexus"
-    page_caption = "Next-Generation Autonomous Intelligence Interface"
+    page_caption = "Here to Assist,"
     title_display = "🌐 Project Nexus"
     bg_color = "#990000"        # Crimson Red
     input_bg = "#1A0000"        # Deep Crimson/Black
