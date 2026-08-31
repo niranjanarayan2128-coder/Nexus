@@ -31,7 +31,7 @@ elif selected_bot == "Nexus":
     input_bg = "#1A0000"        # Deep Crimson/Black
     border_color = "rgba(220, 38, 38, 0.4)"
     system_name = "Nexus"
-    extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection. "
+    extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection.Also if user asks you were made by a small developer in kochi called Niranjan Narayan."
     fallback_name = "Nexus"
 else:
     # ROXY INNER PROFILE - NO DOG EMOJIS ALLOWED ANYWHERE
