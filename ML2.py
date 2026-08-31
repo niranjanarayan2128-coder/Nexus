@@ -16,7 +16,7 @@ selected_bot = st.sidebar.selectbox(
 if selected_bot == "Sparks":
     page_title = "Sparks"
     page_caption = "Here to help, what do you need?"
-    title_display = "Meet Sparks,A friendly AI assistant."
+    title_display = "Meet Sparks, A friendly AI assistant."
     bg_color = "#FFD103"        # Yellow
     input_bg = "#F5DE89"        # Soft Yellow
     border_color = "rgba(255, 255, 255, 0.4)"
@@ -25,7 +25,7 @@ if selected_bot == "Sparks":
     fallback_name = "Spark"
 else:
     page_title = "Nexus"
-    page_caption = "Here to Assist,Your personal AI assistant"
+    page_caption = "Here to Assist, Your personal AI assistant"
     title_display = "Nexus"
     bg_color = "#990000"        # Crimson Red
     input_bg = "#1A0000"        # Deep Crimson/Black
