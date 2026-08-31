@@ -62,21 +62,44 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom UI layout styling injection (Prevents browser sidebar collapsing)
+# Custom UI layout styling injection (Fixed: Brings sidebar stack to the front layer)
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
         header {{visibility: hidden;}}
-        .stApp {{background-color: {bg_color}; color: #FFFFFF;}}
-        .stChatInputContainer {{background-color: {input_bg} !important; border-radius: 12px !important; border: 1px solid {border_color} !important;}}
-        .stChatInput {{color: #FFFFFF !important;}}
         
-        /* HARD OVERRIDE: Destroys the close/collapse button mechanism completely */
-        [data-testid="sidebar-close-button"] {{
-            display: none !important;
+        /* Base App Canvas Background */
+        .stApp {{
+            background-color: {bg_color}; 
+            color: #FFFFFF;
+            z-index: 1 !important;
         }}
+        
+        /* Chat Input Element Wrappers */
+        .stChatInputContainer {{
+            background-color: {input_bg} !important; 
+            border-radius: 12px !important; 
+            border: 1px solid {border_color} !important;
+        }}
+        .stChatInput {{
+            color: #FFFFFF !important;
+        }}
+        
+        /* FORCING SIDEBAR STACK PRIORITY: Brings container above background layers */
+        [data-testid="stSidebar"] {{
+            z-index: 999999 !important;
+            background-color: rgba(0, 0, 0, 0.25) !important;
+        }}
+        
+        /* Bringing the mobile chevron button asset to the absolute front layer */
         [data-testid="stSidebarCollapsedControl"] {{
+            z-index: 1000000 !important;
+            display: block !important;
+        }}
+
+        /* Completely deletes structural internal sidebar close buttons */
+        [data-testid="sidebar-close-button"] {{
             display: none !important;
         }}
     </style>
@@ -152,7 +175,6 @@ if typed_text:
 
                 if "SEARCH:" in content:
                     parts = content.split("SEARCH:")
-                    # FIXED: Added array index pointer parts[1] to isolate text string safely
                     topic = parts[1].strip() if len(parts) > 1 else ""
                     
                     if topic:
