@@ -4,9 +4,9 @@ from langchain_groq import ChatGroq
 from duckduckgo_search import DDGS
 
 # --- 1. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
-st.sidebar.markdown("### 🎛️ System Control")
+st.sidebar.markdown("### Model Picker")
 selected_bot = st.sidebar.selectbox(
-    "Select the AI you want to use:",
+    "Select the model you want to use:",
     ["Sparks", "Nexus"],
     key="bot_selector"
 )
