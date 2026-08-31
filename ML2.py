@@ -6,14 +6,14 @@ from duckduckgo_search import DDGS
 # --- 1. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
 st.sidebar.markdown("### 🎛️ System Control")
 selected_bot = st.sidebar.selectbox(
-    "Select AI Core Instance:",
-    ["Spark", "Project Nexus"],
+    "Select the AI you want to use:",
+    ["Sparks", "Nexus"],
     key="bot_selector"
 )
 
 # --- 2. PREMIUM THEME CONFIGURATOR ---
 # Dynamically assigns UI colors and instructions based on the active selection
-if selected_bot == "Spark":
+if selected_bot == "Sparks":
     page_title = "Sparks"
     page_caption = "Here to help, what do you need?"
     title_display = "Meet Sparks,"
@@ -24,15 +24,15 @@ if selected_bot == "Spark":
     extra_personality = "but be brief and quick and if user asks you are made by Niranjan Narayan, a small developer in Kochi, and be funny and kind. "
     fallback_name = "Spark"
 else:
-    page_title = "Project Nexus"
+    page_title = "Nexus"
     page_caption = "Here to Assist,"
-    title_display = "🌐 Project Nexus"
+    title_display = "Nexus"
     bg_color = "#990000"        # Crimson Red
     input_bg = "#1A0000"        # Deep Crimson/Black
     border_color = "rgba(220, 38, 38, 0.4)"
-    system_name = "Project Nexus"
+    system_name = "Nexus"
     extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection. "
-    fallback_name = "Project Nexus"
+    fallback_name = "Nexus"
 
 st.set_page_config(page_title=page_title, page_icon="🌐", layout="wide")
 
