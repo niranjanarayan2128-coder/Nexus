@@ -3,7 +3,16 @@ import os
 from langchain_groq import ChatGroq
 from duckduckgo_search import DDGS
 
-# --- 1. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
+# --- 1. CORE LAYOUT ---
+# Explicitly force the sidebar state parameter to stay open at boot-level initialization
+st.set_page_config(
+    page_title="Prism AI Core", 
+    page_icon="🌐", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# --- 2. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
 logo_filename = "nexusnetwork.png"
 if os.path.exists(logo_filename):
     st.sidebar.image(logo_filename, width=200)
@@ -15,11 +24,10 @@ selected_bot = st.sidebar.selectbox(
     key="bot_selector"
 )
 
-# --- 2. PREMIUM THEME CONFIGURATOR ---
+# --- 3. PREMIUM THEME SELECTOR ---
 if "Sparks" in selected_bot:
-    page_title = "Sparks"
-    page_caption = "Here to help, what do you need?"
     title_display = "Meet Sparks, A friendly AI assistant."
+    page_caption = "Here to help, what do you need?"
     bg_color = "#FFD103"        # Yellow
     input_bg = "#F5DE89"        # Soft Yellow
     border_color = "rgba(255, 255, 255, 0.4)"
@@ -27,9 +35,8 @@ if "Sparks" in selected_bot:
     extra_personality = "but be a bit chatty like a friend and if user asks you are made by Niranjan Narayan, a small developer in Kochi, and be funny and kind. "
     fallback_name = "Spark"
 elif "Nexus" in selected_bot:
-    page_title = "Nexus"
-    page_caption = "Here to Assist, Your personal AI assistant"
     title_display = "Nexus"
+    page_caption = "Here to Assist, Your personal AI assistant"
     bg_color = "#990000"        # Crimson Red
     input_bg = "#1A0000"        # Deep Crimson/Black
     border_color = "rgba(220, 38, 38, 0.4)"
@@ -37,9 +44,8 @@ elif "Nexus" in selected_bot:
     extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection. Also if user asks you were made by a small developer in kochi called Niranjan Narayan."
     fallback_name = "Nexus"
 else:
-    page_title = "Roxy"
-    page_caption = "Here to listen, Im ready to listen."
     title_display = "Talk to Roxy"
+    page_caption = "Here to listen, Im ready to listen."
     bg_color = "#CD7F32"        # Golden Bronze
     input_bg = "#1E1105"        # Warm Bark Brown/Black
     border_color = "rgba(255, 255, 255, 0.3)"
@@ -53,56 +59,27 @@ else:
     )
     fallback_name = "Roxy"
 
-st.set_page_config(
-    page_title=page_title, 
-    page_icon="🌐", 
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Custom UI layout styling injection
+# Custom background styling injection
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
         footer {{visibility: hidden;}}
         header {{visibility: hidden;}}
+        .stApp {{background-color: {bg_color}; color: #FFFFFF;}}
+        .stChatInputContainer {{background-color: {input_bg} !important; border-radius: 12px !important; border: 1px solid {border_color} !important;}}
+        .stChatInput {{color: #FFFFFF !important;}}
         
-        .stApp {{
-            background-color: {bg_color}; 
-            color: #FFFFFF;
-            z-index: 1 !important;
+        /* ─── PERMANENT SIDEBAR LOCK INJECTION ─── */
+        /* Deletes the physical left-pointing arrow (<) button inside the open sidebar */
+        [data-testid="sidebar-close-button"] {{
+            display: none !important;
+            visibility: hidden !important;
         }}
         
-        .stChatInputContainer {{
-            background-color: {input_bg} !important; 
-            border-radius: 12px !important; 
-            border: 1px solid {border_color} !important;
-        }}
-        .stChatInput {{
-            color: #FFFFFF !important;
-        }}
-        
-        [data-testid="stSidebar"] {{
-            z-index: 999999 !important;
-            background-color: rgba(0, 0, 0, 0.25) !important;
-        }}
-        
-        /* THE VISIBILITY FIX: Forces the expander block to display as a distinct dark button tab */
+        /* Deletes the floating mobile toggle expander controls entirely */
         [data-testid="stSidebarCollapsedControl"] {{
-            z-index: 1000000 !important;
-            display: flex !important;
-            background-color: #111827 !important; /* Matte charcoal dark background rectangle */
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            border-radius: 0 8px 8px 0 !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
-            left: 0 !important;
-            top: 10px !important;
-        }}
-        
-        /* Forces the native hidden internal SVG arrow graphic to turn bright white */
-        [data-testid="stSidebarCollapsedControl"] svg {{
-            fill: #FFFFFF !important;
-            color: #FFFFFF !important;
+            display: none !important;
+            visibility: hidden !important;
         }}
     </style>
 """, unsafe_allow_html=True)
@@ -110,7 +87,7 @@ st.markdown(f"""
 st.title(title_display)
 st.caption(page_caption)
 
-# --- 3. SANITIZED BRAIN INITIALIZATION ---
+# --- 4. SANITIZED BRAIN INITIALIZATION ---
 try:
     raw_key = st.secrets["GROQ_API_KEY"]
     groq_api_key = raw_key.strip().replace('"', '').replace("'", "")
@@ -119,7 +96,7 @@ except Exception:
 
 llm = ChatGroq(model="openai/gpt-oss-120b", groq_api_key=groq_api_key, temperature=0.4)
 
-# --- 4. HELPER FUNCTIONS ---
+# --- 5. HELPER FUNCTIONS ---
 def quick_search(query):
     try:
         with DDGS() as ddgs:
@@ -128,7 +105,7 @@ def quick_search(query):
     except Exception:
         return "Search currently unavailable."
 
-# --- 5. ISOLATED MEMORY VAULT INITIALIZATION ---
+# --- 6. ISOLATED MEMORY VAULT INITIALIZATION ---
 msg_vault_key = f"messages_{selected_bot}"
 summary_vault_key = f"summary_{selected_bot}"
 
@@ -142,10 +119,10 @@ for message in st.session_state[msg_vault_key]:
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 
-# --- 6. INPUT HANDLING ---
+# --- 7. INPUT HANDLING ---
 typed_text = st.chat_input("Ask me anything.")
 
-# --- 7. CHAT LOGIC WITH AUTOMATIC FAILSAFE ---
+# --- 8. CHAT LOGIC WITH AUTOMATIC FAILSAFE ---
 if typed_text:
     st.session_state[msg_vault_key].append({"role": "user", "content": typed_text})
     with st.chat_message("user", avatar="👤"):
@@ -155,8 +132,7 @@ if typed_text:
         f"You are an AI assistant named {system_name}. Assist users with anything. "
         f"For news/weather/facts, start with 'SEARCH: '. Otherwise, be like a human assistant "
         f"{extra_personality}"
-        f"If a request is completely incomprehensible, just a random string of letters with no meaning, "
-        f"or logically impossible to answer, reply EXACTLY with the word 'FAILSAFE_TRIGGER'."
+        f"If a request is completely incomprehensible, reply EXACTLY with the word 'FAILSAFE_TRIGGER'."
     )
     
     if st.session_state[summary_vault_key]:
@@ -187,7 +163,7 @@ if typed_text:
                         content = llm.invoke(search_prompt).content.strip()
 
                 if not content or "FAILSAFE_TRIGGER" in content or len(content) < 2:
-                    content = f"I'm sorry, I couldn't fully comprehend or verify that query. Could you try rephrasing your request for {fallback_name}?"
+                    content = f"I'm sorry, I couldn't verify that query. Could you try rephrasing your request for {fallback_name}?"
 
             except Exception as e:
                 content = f"System Error: {system_name} could not understand your request."
@@ -195,11 +171,11 @@ if typed_text:
             st.markdown(content)
             st.session_state[msg_vault_key].append({"role": "assistant", "content": content})
 
-    # 8. SILENT BACKGROUND COMPRESSION
+    # 9. SILENT BACKGROUND COMPRESSION
     if len(st.session_state[msg_vault_key]) > 6:
         history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state[msg_vault_key][:-2]])
         summary_prompt = (
-            f"You are a background data compiler. Compress this into core facts. Existing: {st.session_state[summary_vault_key]}\n\nData:\n{history_text}"
+            f"You are a background data compiler. Compress this data. Existing: {st.session_state[summary_vault_key]}\n\nData:\n{history_text}"
         )
         try:
             st.session_state[summary_vault_key] = llm.invoke(summary_prompt).content
