@@ -6,7 +6,7 @@ from duckduckgo_search import DDGS
 # --- 1. CORE LAYOUT ---
 # Explicitly force the sidebar state parameter to stay open at boot-level initialization
 st.set_page_config(
-    page_title="Prism AI Core", 
+    page_title="Nexus Network Core", 
     page_icon="🌐", 
     layout="wide",
     initial_sidebar_state="expanded"
@@ -69,14 +69,14 @@ st.markdown(f"""
         .stChatInputContainer {{background-color: {input_bg} !important; border-radius: 12px !important; border: 1px solid {border_color} !important;}}
         .stChatInput {{color: #FFFFFF !important;}}
         
-        /* ─── PERMANENT SIDEBAR LOCK INJECTION ─── */
-        /* Deletes the physical left-pointing arrow (<) button inside the open sidebar */
+        /* ─── HARD MENUS LOCK INJECTION ─── */
+        /* Deletes the physical left-pointing arrow (<) close button completely */
         [data-testid="sidebar-close-button"] {{
             display: none !important;
             visibility: hidden !important;
         }}
         
-        /* Deletes the floating mobile toggle expander controls entirely */
+        /* Deletes the floating toggle controllers from the layout frame */
         [data-testid="stSidebarCollapsedControl"] {{
             display: none !important;
             visibility: hidden !important;
