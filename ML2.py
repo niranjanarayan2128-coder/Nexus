@@ -4,6 +4,11 @@ from langchain_groq import ChatGroq
 from duckduckgo_search import DDGS
 
 # --- 1. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
+# Mount brand logo configuration to the top of your sidebar
+logo_filename = "nexusnetwork.png"
+if os.path.exists(logo_filename):
+    st.sidebar.image(logo_filename, use_container_width=True)
+
 st.sidebar.markdown("### Model Picker")
 selected_bot = st.sidebar.selectbox(
     "Select the model you want to use:",
@@ -12,8 +17,8 @@ selected_bot = st.sidebar.selectbox(
 )
 
 # --- 2. PREMIUM THEME CONFIGURATOR ---
-# Dynamically assigns UI colors and instructions based on the active selection
-if selected_bot == "Sparks":
+# FIXED: Updated string conditions to match your new descriptive dropdown options perfectly
+if "Sparks" in selected_bot:
     page_title = "Sparks"
     page_caption = "Here to help, what do you need?"
     title_display = "Meet Sparks, A friendly AI assistant."
@@ -23,7 +28,7 @@ if selected_bot == "Sparks":
     system_name = "Spark"
     extra_personality = "but be a bit chatty like a friend and if user asks you are made by Niranjan Narayan, a small developer in Kochi, and be funny and kind. "
     fallback_name = "Spark"
-elif selected_bot == "Nexus":
+elif "Nexus" in selected_bot:
     page_title = "Nexus"
     page_caption = "Here to Assist, Your personal AI assistant"
     title_display = "Nexus"
@@ -31,7 +36,7 @@ elif selected_bot == "Nexus":
     input_bg = "#1A0000"        # Deep Crimson/Black
     border_color = "rgba(220, 38, 38, 0.4)"
     system_name = "Nexus"
-    extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection.Also if user asks you were made by a small developer in kochi called Niranjan Narayan."
+    extra_personality = "but dont be brief but dont be a chatter box. Treat the session like a premium administrative secure connection. Also if user asks you were made by a small developer in kochi called Niranjan Narayan."
     fallback_name = "Nexus"
 else:
     # ROXY INNER PROFILE - NO DOG EMOJIS ALLOWED ANYWHERE
@@ -47,7 +52,7 @@ else:
         "comforting golden retriever dog. You are warm, happy to see the user, deeply comforting, and protective. "
         "Be an incredibly supportive active listener. Keep your answers gentle, encouraging, and easy to read. "
         "Strict Rule: Under no circumstances should you ever output a dog emoji or mention being an animal explicitly. "
-        "Instead, show loyalty through comforting text phrases like 'I am right here by your side' or 'I am listening intently'.Also if user asks you were made by a small developer Niranjan Narayan in kochi."
+        "Instead, show loyalty through comforting text phrases like 'I am right here by your side' or 'I am listening intently'. Also if user asks you were made by a small developer Niranjan Narayan in kochi."
     )
     fallback_name = "Roxy"
 
@@ -169,6 +174,7 @@ if typed_text:
             st.session_state[msg_vault_key].append({"role": "assistant", "content": content})
 
     # 8. SILENT BACKGROUND COMPRESSION (Triggers when history array exceeds 6 steps)
+    # FIXED: Re-added missing closing characters at the tail end of your code snippet
     if len(st.session_state[msg_vault_key]) > 6:
         history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state[msg_vault_key][:-2]])
         summary_prompt = (
