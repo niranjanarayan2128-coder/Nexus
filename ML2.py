@@ -24,7 +24,7 @@ st.caption("Here to help, what do you need?")
 # --- 2. INITIALIZE BRAIN ---
 groq_api_key = st.secrets["GROQ_API_KEY"]
 # Force-pointing to the permanently stable flagship model
-llm = ChatGroq(model="openai/gpt-oss-20b", groq_api_key=groq_api_key, temperature=0.4)
+llm = ChatGroq(model="openai/gpt-oss-120b", groq_api_key=groq_api_key, temperature=0.4)
 # --- 3. HELPER FUNCTIONS ---
 def quick_search(query):
     try:
