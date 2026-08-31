@@ -21,7 +21,7 @@ if selected_bot == "Sparks":
     input_bg = "#F5DE89"        # Soft Yellow
     border_color = "rgba(255, 255, 255, 0.4)"
     system_name = "Spark"
-    extra_personality = "but be brief and quick and if user asks you are made by Niranjan Narayan, a small developer in Kochi, and be funny and kind. "
+    extra_personality = "but be a bit chatty like a friend and if user asks you are made by Niranjan Narayan, a small developer in Kochi, and be funny and kind. "
     fallback_name = "Spark"
 else:
     page_title = "Nexus"
