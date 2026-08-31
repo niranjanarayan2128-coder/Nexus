@@ -7,7 +7,7 @@ from duckduckgo_search import DDGS
 st.sidebar.markdown("### Model Picker")
 selected_bot = st.sidebar.selectbox(
     "Select the model you want to use:",
-    ["Sparks", "Nexus", "Roxy"],
+    ["Sparks, your friendly AI assistant", "Nexus, Your Personal Assistant", "Roxy, Your AI companion"],
     key="bot_selector"
 )
 
@@ -36,7 +36,7 @@ elif selected_bot == "Nexus":
 else:
     # ROXY INNER PROFILE - NO DOG EMOJIS ALLOWED ANYWHERE
     page_title = "Roxy"
-    page_caption = "Warmth, Comfort, and Active Listening Support"
+    page_caption = "Here to listen, Im ready to listen."
     title_display = "Talk to Roxy"
     bg_color = "#CD7F32"        # Golden Bronze
     input_bg = "#1E1105"        # Warm Bark Brown/Black
