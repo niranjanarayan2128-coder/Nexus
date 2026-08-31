@@ -4,7 +4,7 @@ from langchain_groq import ChatGroq
 from duckduckgo_search import DDGS
 
 # --- 1. THE ARCHITECTURE CONTROLLER (Bot Selection Menu) ---
-# Mount brand logo configuration to the top of your sidebar
+# Mount brand logo configuration to the top of your sidebar array cleanly
 logo_filename = "nexusnetwork.png"
 if os.path.exists(logo_filename):
     st.sidebar.image(logo_filename, use_container_width=True)
@@ -56,8 +56,7 @@ else:
 
 st.set_page_config(page_title=page_title, page_icon="🌐", layout="wide")
 
-# Custom UI injector utilizing your selected variables
-# NEW: Force-overrides Streamlit's mobile styles to keep the sidebar permanently visible!
+# Custom UI layout styling injection
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
@@ -66,24 +65,6 @@ st.markdown(f"""
         .stApp {{background-color: {bg_color}; color: #FFFFFF;}}
         .stChatInputContainer {{background-color: {input_bg} !important; border-radius: 12px !important; border: 1px solid {border_color} !important;}}
         .stChatInput {{color: #FFFFFF !important;}}
-        
-        /* --- SIDEBAR FORCE-AWAKE INJECTION --- */
-        /* Forces the sidebar to stay visible on mobile layouts */
-        [data-testid="stSidebar"] {{
-            left: 0 !important;
-            transform: none !important;
-            transition: none !important;
-            width: 260px !important;
-            display: block !important;
-        }}
-        /* Hides the clumsy floating trigger arrow icon button completely */
-        [data-testid="stSidebarCollapsedControl"] {{
-            display: none !important;
-        }}
-        /* Shifts the main chat window so it leaves clean space for the locked menu */
-        .stMainContainer {{
-            margin-left: 0px !important;
-        }}
     </style>
 """, unsafe_allow_html=True)
 
