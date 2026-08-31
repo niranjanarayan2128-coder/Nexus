@@ -7,7 +7,7 @@ from duckduckgo_search import DDGS
 # Mount brand logo configuration to the top of your sidebar array cleanly
 logo_filename = "nexusnetwork.png"
 if os.path.exists(logo_filename):
-    st.sidebar.image(logo_filename, use_container_width=True)
+    st.sidebar.image(logo_filename, width=200)
 
 st.sidebar.markdown("### Model Picker")
 selected_bot = st.sidebar.selectbox(
@@ -54,7 +54,7 @@ else:
     )
     fallback_name = "Roxy"
 
-# FIXED: Forcing "expanded" state directly within the page configuration parameters as well!
+# Forcing layout parameters to stay expanded at root-level initialization
 st.set_page_config(
     page_title=page_title, 
     page_icon="🌐", 
@@ -62,7 +62,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom UI layout styling injection (REPAIRED: Stripped away the blocking display-none tags)
+# Custom UI layout styling injection (Prevents browser sidebar collapsing)
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
@@ -71,6 +71,14 @@ st.markdown(f"""
         .stApp {{background-color: {bg_color}; color: #FFFFFF;}}
         .stChatInputContainer {{background-color: {input_bg} !important; border-radius: 12px !important; border: 1px solid {border_color} !important;}}
         .stChatInput {{color: #FFFFFF !important;}}
+        
+        /* HARD OVERRIDE: Destroys the close/collapse button mechanism completely */
+        [data-testid="sidebar-close-button"] {{
+            display: none !important;
+        }}
+        [data-testid="stSidebarCollapsedControl"] {{
+            display: none !important;
+        }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -144,6 +152,7 @@ if typed_text:
 
                 if "SEARCH:" in content:
                     parts = content.split("SEARCH:")
+                    # FIXED: Added array index pointer slice [1] to extract the text safely before stripping
                     topic = parts[1].strip() if len(parts) > 1 else ""
                     
                     if topic:
@@ -166,7 +175,7 @@ if typed_text:
             st.markdown(content)
             st.session_state[msg_vault_key].append({"role": "assistant", "content": content})
 
-    # 8. SILENT BACKGROUND COMPRESSION
+    # 8. SILENT BACKGROUND COMPRESSION (Triggers when history array exceeds 6 steps)
     if len(st.session_state[msg_vault_key]) > 6:
         history_text = "\n".join([f"{m['role']}: {m['content']}" for m in st.session_state[msg_vault_key][:-2]])
         summary_prompt = (
