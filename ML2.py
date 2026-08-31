@@ -7,7 +7,7 @@ from duckduckgo_search import DDGS
 st.sidebar.markdown("### Model Picker")
 selected_bot = st.sidebar.selectbox(
     "Select the model you want to use:",
-    ["Sparks, your friendly AI assistant", "Nexus, Your Personal Assistant", "Roxy, Your AI companion"],
+    ["Sparks, Your Friendly Assistant", "Nexus, Your Dedicated Assistant", "Roxy, Your loyal companion"],
     key="bot_selector"
 )
 
