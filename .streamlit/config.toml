@@ -1,0 +1,6 @@
+[sidebar]
+showSidebarNavigation = true
+
+[ui]
+# This forces the sidebar picker menu to stay open permanently across every device
+initialSidebarState = "expanded"
