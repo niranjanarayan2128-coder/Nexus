@@ -54,9 +54,15 @@ else:
     )
     fallback_name = "Roxy"
 
-st.set_page_config(page_title=page_title, page_icon="🌐", layout="wide")
+# FIXED: Forcing "expanded" state directly within the page configuration parameters as well!
+st.set_page_config(
+    page_title=page_title, 
+    page_icon="🌐", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Custom UI layout styling injection
+# Custom UI layout styling injection (REPAIRED: Stripped away the blocking display-none tags)
 st.markdown(f"""
     <style>
         #MainMenu {{visibility: hidden;}}
