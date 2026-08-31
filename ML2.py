@@ -21,7 +21,7 @@ if "Sparks" in selected_bot:
     page_title = "Sparks"
     page_caption = "Here to help, what do you need?"
     title_display = "Meet Sparks, A friendly AI assistant."
-    bg_color = "#000000"        # Yellow
+    bg_color = "#FFFF00"        # Yellow
     input_bg = "#F5DE89"        # Soft Yellow
     border_color = "rgba(255, 255, 255, 0.4)"
     system_name = "Spark"
