@@ -20,7 +20,7 @@ if os.path.exists(logo_filename):
 st.sidebar.markdown("### Model Picker")
 selected_bot = st.sidebar.selectbox(
     "Select the model you want to use:",
-    ["Sparks, Your Friendly Assistant", "Nexus, Your Dedicated Assistant", "Roxy, Your loyal companion"],
+    ["Sparks, Your Friendly Assistant", "Nexus, Your Smart Assistant", "Roxy, Your loyal companion"],
     key="bot_selector"
 )
 
@@ -45,7 +45,7 @@ elif "Nexus" in selected_bot:
     fallback_name = "Nexus"
 else:
     title_display = "Talk to Roxy"
-    page_caption = "Here to listen, Im ready to listen."
+    page_caption = "Here to help, talk about anything you feel like."
     bg_color = "#CD7F32"        # Golden Bronze
     input_bg = "#1E1105"        # Warm Bark Brown/Black
     border_color = "rgba(255, 255, 255, 0.3)"
